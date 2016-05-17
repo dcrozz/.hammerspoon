@@ -1,7 +1,6 @@
-# .hammerspoon
 Hammerspoon
 ====
-To make my osx more similiar to my archlinux (with Awesome WM),hammerspoon is the best choice.
+To make my OSX more similiar to my Archlinux (with Awesome WM),hammerspoon is the best choice.
 Unsolved issue
 ----
 After trying toogleZoom and setFrame and Maximize...
@@ -12,23 +11,21 @@ Download
 The init.lua is [here](https://github.com/dcrozz/.hammerspoon/blob/master/init.lua).
 Shortcuts
 ----
-```hyper = cmd + ctrl + shift
-
-hyper + h			set the window to the left
-hyper + l			set the window to the right 
-hyper + k			set the window to fill the screen
-hyper + j			set the window to the center
-hyper + e			set the window to lefttop
-hyper + r			set the window to righttop
-hyper + c			set the window to leftbottom
-hyper + v			set the window to rightbottom
-hyper + ;			set the window to the next monitor
-hyper + `			set the mouse to the center of next monitor
-hyper + i			hint
-```
+		hyper = cmd + ctrl + shift
+		hyper + h			set the window to the left
+		hyper + l			set the window to the right 
+		hyper + k			set the window to fill the screen
+		hyper + j			set the window to the center
+		hyper + e			set the window to lefttop
+		hyper + r			set the window to righttop
+		hyper + c			set the window to leftbottom
+		hyper + v			set the window to rightbottom
+		hyper + ;			set the window to the next monitor
+		hyper + `			set the mouse to the center of next monitor
+		hyper + i			hint
 #The shortcuts of apps
 ###Examples
-```
+```Lua
 local key2App = {
 	    w = 'wechat',
 		p = 'Adobe Photoshop CC',
