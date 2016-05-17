@@ -1,10 +1,9 @@
 Hammerspoon
 ====
-To make my OSX more *Awesomelike* ~~Awesome is the best WM in the world~~,hammerspoon is the best choice.
+To make my OSX more **Awesomelike** ~~Awesome is the best WM in the world~~,hammerspoon is the best choice.
 Unsolved issue
 ----
-After trying toogleZoom and setFrame and Maximize...  
-I'm still not capable of setting my Adobe Photoshop CC to fill the screen for unknown reasons.  
+After trying toogleZoom and setFrame and Maximize...I'm still not capable of setting my Adobe Photoshop CC to fill the screen for unknown reasons.  
 Please share with me if you can improve it :)
 Download
 ----
@@ -33,16 +32,5 @@ local key2App = {
 		s = 'Sublime Text 2',
 		m = 'MacVim'
 }
-for key, app in pairs(key2App) do
-	    hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
-end
-function toogleApp(_app) 
-    frontApp = hs.application.frontmostApplication()
-	    if frontApp:title() == _app then
-				frontApp:hide()
-		else
-			hs.application.launchOrFocus(_app)
-		end
-end
 ```
-If you call "hyper + m", the Macvim will toogle between hide and front(open if it's not been started).
+If you call "hyper + m", the Macvim will **toogle between hide and front**(open if it's not been started).
