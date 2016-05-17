@@ -1,10 +1,10 @@
 Hammerspoon
 ====
-To make my OSX more similiar to my Archlinux (with Awesome WM),hammerspoon is the best choice.
+To make my OSX more *Awesomelike* ~~Awesome is the best WM in the world~~,hammerspoon is the best choice.
 Unsolved issue
 ----
-After trying toogleZoom and setFrame and Maximize...
-I'm still not capable of setting my Adobe Photoshop CC to fill the screen for unknown reasons.
+After trying toogleZoom and setFrame and Maximize...  
+I'm still not capable of setting my Adobe Photoshop CC to fill the screen for unknown reasons.  
 Please share with me if you can improve it :)
 Download
 ----
@@ -23,7 +23,8 @@ Shortcuts
 		hyper + ;			set the window to the next monitor
 		hyper + `			set the mouse to the center of next monitor
 		hyper + i			hint
-#The shortcuts of apps
+The shortcuts of apps
+----
 ###Examples
 ```Lua
 local key2App = {
