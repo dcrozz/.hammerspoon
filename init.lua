@@ -15,7 +15,10 @@ local key2App = {
     w = 'wechat',
     p = 'Adobe Photoshop CC',
     s = 'Sublime Text 2',
-    m = 'MacVim'
+    m = 'MacDown',
+    f = 'Firefox',
+    n = 'NeteaseMusic',
+    g = 'MacVim',
 }
 for key, app in pairs(key2App) do
     hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
@@ -211,11 +214,11 @@ end)
 -- Reload config on write
 -----------------------------------------------
 
--- function reload_config(files)
---     hs.reload()
--- end
+function reload_config(files)
+    hs.reload()
+end
 -- hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reload_config):start()
--- hs.alert.show("Config loaded")
+hs.alert.show("Config loaded")
 
 -----------------------------------------------
 -- Hyper i to show window hints
@@ -284,5 +287,33 @@ hs.hotkey.bind(hyper, ';', function()
         hs.alert.show("No active window")
     end
 end)
+
+local caffein = hs.caffeinate.watcher.new(function (state)
+    if state ==  hs.caffeinate.watcher.screensDidSleep then
+        local wechat =  hs.application.find('wechat')
+        wechat:kill()
+    end
+end)
+caffein:start()
+
+
+
+-- local caffeine = hs.menubar.new()
+-- function setCaffeineDisplay(state)
+--     if state then
+--         caffeine:setTitle("AWAKE")
+--     else
+--         caffeine:setTitle("SLEEPY")
+--     end
+-- end
+
+-- function caffeineClicked()
+--     setCaffeineDisplay(hs.caffeinate.toggle("displayIdle"))
+-- end
+
+-- if caffeine then
+--     caffeine:setClickCallback(caffeineClicked)
+--     setCaffeineDisplay(hs.caffeinate.get("displayIdle"))
+-- end
 
 
