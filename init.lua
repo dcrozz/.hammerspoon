@@ -211,9 +211,9 @@ hs.hotkey.bind(hyper, 'c', function()
 end)
 
 -----------------------------------------------
--- hyper q for top half of the window
+-- hyper o for top half of the window
 -----------------------------------------------
-hs.hotkey.bind(hyper, 'q', function()
+hs.hotkey.bind(hyper, 'o', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()
@@ -230,9 +230,9 @@ hs.hotkey.bind(hyper, 'q', function()
     end
 end)
 -----------------------------------------------
--- hyper z for bottom half of the window
+-- hyper . for bottom half of the window
 -----------------------------------------------
-hs.hotkey.bind(hyper, 'z', function()
+hs.hotkey.bind(hyper, '.', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()

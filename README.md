@@ -15,8 +15,8 @@ Shortcuts
 		hyper + l			set the window to the right 
 		hyper + k			set the window to fill the screen
 		hyper + j			set the window to the center
-		hyper + q			set the window to top half
-		hyper + z			set the window to bottom half
+		hyper + o			set the window to top half
+		hyper + .			set the window to bottom half
 		hyper + e			set the window to lefttop
 		hyper + r			set the window to righttop
 		hyper + c			set the window to leftbottom
