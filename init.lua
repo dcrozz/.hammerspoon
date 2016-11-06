@@ -211,6 +211,43 @@ hs.hotkey.bind(hyper, 'c', function()
 end)
 
 -----------------------------------------------
+-- hyper q for top half of the window
+-----------------------------------------------
+hs.hotkey.bind(hyper, 'q', function()
+    if hs.window.focusedWindow() then
+        local win = hs.window.focusedWindow()
+        local f = win:frame()
+        local screen = win:screen()
+        local max = screen:frame()
+
+        f.x = max.x
+        f.y = max.y
+        f.w = max.w 
+        f.h = max.h / 2
+        win:setFrame(f)
+    else
+        hs.alert.show("No active window")
+    end
+end)
+-----------------------------------------------
+-- hyper z for bottom half of the window
+-----------------------------------------------
+hs.hotkey.bind(hyper, 'z', function()
+    if hs.window.focusedWindow() then
+        local win = hs.window.focusedWindow()
+        local f = win:frame()
+        local screen = win:screen()
+        local max = screen:frame()
+
+        f.x = max.x
+        f.y = max.y + (max.h / 2)
+        f.w = max.w
+        f.h = max.h / 2
+        win:setFrame(f)
+    else
+        hs.alert.show("No active window")
+    end
+end)
 -- Reload config on write
 -----------------------------------------------
 
