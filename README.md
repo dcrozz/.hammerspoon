@@ -24,6 +24,7 @@ Shortcuts
 		hyper + ;			set the window to the next monitor
 		hyper + `			set the mouse to the center of next monitor
 		hyper + i			hint
+		hyper + '			rotate the second screen 90
 The shortcuts of apps
 ----
 ###Examples

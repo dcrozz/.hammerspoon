@@ -325,6 +325,18 @@ hs.hotkey.bind(hyper, ';', function()
     end
 end)
 
+hs.hotkey.bind(hyper, '\'',function()
+	for index,win in pairs(hs.screen.allScreens()) do 
+		if win == hs.screen'Dell' then
+			if win:rotate() == 90 then
+				win:rotate(0)
+			else
+				win:rotate(90)
+			end
+		end
+	end
+end)
+
 local caffein = hs.caffeinate.watcher.new(function (state)
     if state ==  hs.caffeinate.watcher.screensDidSleep then
         local wechat =  hs.application.find('wechat')
