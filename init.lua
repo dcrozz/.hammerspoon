@@ -19,6 +19,7 @@ local key2App = {
     f = 'Firefox',
     n = 'NeteaseMusic',
     g = 'MacVim',
+	z = 'evernote',
 }
 for key, app in pairs(key2App) do
     hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
