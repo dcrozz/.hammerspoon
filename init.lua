@@ -15,11 +15,11 @@ local key2App = {
     w = 'wechat',
     p = 'Adobe Photoshop CC',
     s = 'Sublime Text 2',
-    m = 'MacDown',
+    d = 'MacDown',
     f = 'Firefox',
     n = 'NeteaseMusic',
-    g = 'MacVim',
-	z = 'evernote',
+    m = 'MacVim',
+	q = 'evernote',
 }
 for key, app in pairs(key2App) do
     hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
