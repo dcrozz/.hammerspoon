@@ -4,7 +4,7 @@
 -----------------------------------------------
 
 local hyper = {"cmd", "ctrl","shift"}
-local focus = {"cmd","alt","shift"}
+local input = {"cmd","alt","shift"}
 hs.window.animationDuration = 0
 
 
@@ -13,7 +13,8 @@ hs.window.animationDuration = 0
 -----------------------------------------------
 local key2App = {
     w = 'wechat',
-    p = 'Adobe Photoshop CC',
+    -- p = 'Adobe Photoshop CC',
+	p = 'pdf expert',
     s = 'Sublime Text 2',
     d = 'MacDown',
     f = 'Firefox',
@@ -263,45 +264,10 @@ hs.alert.show("Config loaded")
 -----------------------------------------------
 
 hs.hotkey.bind(hyper, 'i', function()
+    hs.hints.style = 'vimperator'
     hs.hints.windowHints()
 end)
 
------------------------------------------------
--- Hyper hjkl to switch window focus
------------------------------------------------
-
--- hs.hotkey.bind(focus, 'k', function()
---     if hs.window.focusedWindow() then
---         hs.window.focusedWindow():focusWindowNorth()
---     else
---         hs.alert.show("No active window")
---     end
--- end)
-
--- hs.hotkey.bind(focus, 'j', function()
---     if hs.window.focusedWindow() then
---         hs.window.focusedWindow():focusWindowSouth()
---     else
---         hs.alert.show("No active window")
---     end
--- end)
-
--- hs.hotkey.bind(focus, 'l', function()
---     if hs.window.focusedWindow() then
---     hs.window.focusedWindow():focusWindowEast()
---     else
---         hs.alert.show("No active window")
---     end
--- end)
-
--- hs.hotkey.bind(focus, 'h', function()
---     if hs.window.focusedWindow() then
---         hs.window.focusedWindow():focusWindowWest()
---     else
---         hs.alert.show("No active window")
---     end
--- end)
--- Move Mouse to center of next Monitor
 hs.hotkey.bind(hyper, '`', function()
     local screen = hs.mouse.getCurrentScreen()
     local nextScreen = screen:next()
@@ -338,32 +304,122 @@ hs.hotkey.bind(hyper, '\'',function()
 	end
 end)
 
-local caffein = hs.caffeinate.watcher.new(function (state)
+-----------------------------------------------
+-- Exit wechat when sleep
+-----------------------------------------------
+hs.caffeinate.watcher.new(function (state)
     if state ==  hs.caffeinate.watcher.screensDidSleep then
         local wechat =  hs.application.find('wechat')
         wechat:kill()
     end
+end):start()
+
+-----------------------------------------------
+-- Input method change
+-----------------------------------------------
+hs.hotkey.bind({"cmd","alt"}, 'space', function()
+	if hs.keycodes.currentSourceID() ~= "com.apple.inputmethod.SCIM.ITABC" then
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "Pinyin - Simplified")} \n end tell ')
+	else
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "U.S.")} \n end tell ')
+	end
 end)
-caffein:start()
+hs.hotkey.bind({"cmd","alt"}, 'j', function()
+	if hs.keycodes.currentSourceID() ~= "com.apple.inputmethod.Kotoeri.Japanese" then
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "Hiragana")} \n end tell ')
+	else
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "U.S.")} \n end tell ')
+	end
+end)
 
+-----------------------------------------------
+-- mute when connect to select WIFI
+-----------------------------------------------
+local workWifi = 'CUPD_WIFI'
+local outputDeviceName = 'Built-in Output'
+hs.wifi.watcher.new(function()
+    local currentWifi = hs.wifi.currentNetwork()
+    local currentOutput = hs.audiodevice.current(false)
+    if not currentWifi then return end
+    if (currentWifi == workWifi and currentOutput.name == outputDeviceName) then
+        hs.audiodevice.findDeviceByName(outputDeviceName):setOutputMuted(true)
+    end
+end):start()
 
+-----------------------------------------------
+--Simple Vi mode with Hammerspoon (fn+hjkl) 
+-----------------------------------------------
+local module = {}
 
--- local caffeine = hs.menubar.new()
--- function setCaffeineDisplay(state)
---     if state then
---         caffeine:setTitle("AWAKE")
---     else
---         caffeine:setTitle("SLEEPY")
---     end
--- end
+module.debugging = false -- whether to print status updates
 
--- function caffeineClicked()
---     setCaffeineDisplay(hs.caffeinate.toggle("displayIdle"))
--- end
+local eventtap = require "hs.eventtap"
+local event    = eventtap.event
+local inspect  = require "hs.inspect"
 
--- if caffeine then
---     caffeine:setClickCallback(caffeineClicked)
---     setCaffeineDisplay(hs.caffeinate.get("displayIdle"))
--- end
+local keyHandler = function(e)
+    local watchFor = {
+            h = "left",
+            j = "down",
+            k = "up",
+            l = "right"
+        }
+    local actualKey = e:getCharacters(true)
+    local replacement = watchFor[actualKey:lower()]
+    if replacement then
+        local isDown = e:getType() == event.types.keyDown
+        local flags  = {}
+        for k, v in pairs(e:getFlags()) do
+            if v and k ~= "fn" then -- fn will be down because that's our "wrapper", so ignore it
+                table.insert(flags, k)
+            end
+        end
+        if module.debugging then print("viKeys: " .. replacement, inspect(flags), isDown) end
+        local replacementEvent = event.newKeyEvent(flags, replacement, isDown)
+        if isDown then
+            -- allow for auto-repeat
+            replacementEvent:setProperty(event.properties.keyboardEventAutorepeat, e:getProperty(event.properties.keyboardEventAutorepeat))
+        end
+        return true, { replacementEvent }
+    else
+        return false -- do nothing to the event, just pass it along
+    end
+end
 
+local modifierHandler = function(e)
+    local flags = e:getFlags()
+    local onlyControlPressed = false
+    for k, v in pairs(flags) do
+        onlyControlPressed = v and k == "fn"
+        if not onlyControlPressed then break end
+    end
+    -- you must tap and hold fn by itself to turn this on
+    if onlyControlPressed and not module.keyListener then
+        if module.debugging then print("viKeys: keyhandler on") end
+        module.keyListener = eventtap.new({ event.types.keyDown, event.types.keyUp }, keyHandler):start()
+    -- however, adding additional modifiers afterwards is ok... its only when fn isn't down that we switch back off
+    elseif not flags.fn and module.keyListener then
+        if module.debugging then print("viKeys: keyhandler off") end
+        module.keyListener:stop()
+        module.keyListener = nil
+    end
+    return false
+end
 
+module.modifierListener = eventtap.new({ event.types.flagsChanged }, modifierHandler)
+
+module.start = function()
+    module.modifierListener:start()
+end
+
+module.stop = function()
+    if module.keyListener then
+        module.keyListener:stop()
+        module.keyListener = nil
+    end
+    module.modifierListener:stop()
+end
+
+module.start() -- autostart
+
+return module
