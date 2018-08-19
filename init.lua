@@ -15,12 +15,13 @@ local key2App = {
     w = 'wechat',
     -- p = 'Adobe Photoshop CC',
 	p = 'pdf expert',
-    s = 'Sublime Text 2',
-    d = 'MacDown',
+    s = 'Sublime Text',
+    -- d = 'MacDown',
     f = 'Firefox',
     n = 'NeteaseMusic',
     m = 'MacVim',
 	q = 'evernote',
+	t = 'Things3',
 }
 for key, app in pairs(key2App) do
     hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
@@ -283,7 +284,14 @@ hs.hotkey.bind(hyper, ';', function()
         local win = hs.window.focusedWindow()
         local screen = win:screen()
         if #hs.screen.allScreens() > 1 then
-            win:moveToScreen(screen:next())
+			if win:isFullScreen() then
+				win:setFullScreen(false):moveToScreen(screen:next())
+				hs.timer.doAfter(0.6,function()
+					win:setFullScreen(true)
+				end)
+			else	
+				win:moveToScreen(screen:next())
+			end
         else
             hs.alert.show("Only one monitor")
         end
@@ -307,12 +315,13 @@ end)
 -----------------------------------------------
 -- Exit wechat when sleep
 -----------------------------------------------
-hs.caffeinate.watcher.new(function (state)
+killWechat = hs.caffeinate.watcher.new(function (state)
     if state ==  hs.caffeinate.watcher.screensDidSleep then
         local wechat =  hs.application.find('wechat')
         wechat:kill()
     end
-end):start()
+end)
+killWechat:start()
 
 -----------------------------------------------
 -- Input method change
@@ -337,14 +346,15 @@ end)
 -----------------------------------------------
 local workWifi = 'CUPD_WIFI'
 local outputDeviceName = 'Built-in Output'
-hs.wifi.watcher.new(function()
+getMute = hs.wifi.watcher.new(function()
     local currentWifi = hs.wifi.currentNetwork()
     local currentOutput = hs.audiodevice.current(false)
     if not currentWifi then return end
     if (currentWifi == workWifi and currentOutput.name == outputDeviceName) then
         hs.audiodevice.findDeviceByName(outputDeviceName):setOutputMuted(true)
     end
-end):start()
+end)
+getMute:start()
 
 -----------------------------------------------
 --Simple Vi mode with Hammerspoon (fn+hjkl) 
@@ -423,3 +433,4 @@ end
 module.start() -- autostart
 
 return module
+
