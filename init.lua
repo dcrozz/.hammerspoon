@@ -16,7 +16,7 @@ local key2App = {
     -- p = 'Adobe Photoshop CC',
 	p = 'pdf expert',
     s = 'Sublime Text 2',
-    d = 'MacDown',
+    -- d = 'MacDown',
     f = 'Firefox',
     n = 'NeteaseMusic',
     m = 'MacVim',
@@ -307,10 +307,9 @@ end)
 -----------------------------------------------
 -- Exit wechat when sleep
 -----------------------------------------------
-hs.caffeinate.watcher.new(function (state)
+killWechat = hs.caffeinate.watcher.new(function (state)
     if state ==  hs.caffeinate.watcher.screensDidSleep then
-        local wechat =  hs.application.find('wechat')
-        wechat:kill()
+        hs.application.find('wechat'):kill()
     end
 end):start()
 
@@ -335,9 +334,9 @@ end)
 -----------------------------------------------
 -- mute when connect to select WIFI
 -----------------------------------------------
-local workWifi = 'CUPD_WIFI'
-local outputDeviceName = 'Built-in Output'
-hs.wifi.watcher.new(function()
+wifimute = hs.wifi.watcher.new(function()
+    local workWifi = 'CUPD_WIFI'
+    local outputDeviceName = 'Built-in Output'
     local currentWifi = hs.wifi.currentNetwork()
     local currentOutput = hs.audiodevice.current(false)
     if not currentWifi then return end
