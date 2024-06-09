@@ -1,10 +1,12 @@
 -- I have give up zoomnig the photoshop cc in my osx 10.11.4
+-- 20240609 update: exclude hotkey in screen sharing to let hotkey effective
 -----------------------------------------------
 -- Set up
 -----------------------------------------------
 
 local hyper = {"cmd", "ctrl","shift"}
 local input = {"cmd","alt","shift"}
+local complex = {"cmd","alt","ctrl","shift"}
 hs.window.animationDuration = 0
 
 
@@ -18,14 +20,28 @@ local key2App = {
     s = 'Sublime Text',
     -- d = 'MacDown',
     f = 'Firefox',
-    n = 'NeteaseMusic',
-    m = 'MacVim',
-	q = 'evernote',
+    n = 'Notion',
+    -- m = 'Microsoft Outlook',
+    m = 'NeteaseMusic',
+	q = 'evernote legacy',
 	t = 'Things3',
+    i = 'calendar',
+    y = 'Reeder',
+    z = 'typora'
 }
+local key2complexApp = {
+    d = 'dictionary',
+    p = 'photos'
+}
+
 for key, app in pairs(key2App) do
     hs.hotkey.bind(hyper, key, function() toogleApp(app) end)
 end
+
+for key, app in pairs(key2complexApp) do
+    hs.hotkey.bind(complex, key, function() toogleApp(app) end)
+end
+
 -- Toogle the App between hide and show
 hs.hotkey.bind(hyper, 'return' , function() 
     toogleApp('iTerm') 
@@ -34,7 +50,8 @@ hs.hotkey.bind(hyper, '1' , function()
     toogleApp('Finder')
 end)
 hs.hotkey.bind(hyper, '2' , function()
-    toogleApp('Firefox')
+    -- toogleApp('Google Chrome')
+    toogleApp('Google Chrome')
 end)
 
 function toogleApp(_app) 
@@ -50,7 +67,7 @@ end
 -- hyper h for left one half window
 -----------------------------------------------
 
-hs.hotkey.bind(hyper, 'h', function()
+bindLeft = hs.hotkey.bind(hyper, 'h', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()
@@ -71,7 +88,7 @@ end)
 -- hyper l for right one half window
 -----------------------------------------------
 
-hs.hotkey.bind(hyper, 'l', function()
+bindRight = hs.hotkey.bind(hyper, 'l', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()
@@ -92,7 +109,7 @@ end)
 -- hyper f for fullscreen
 -----------------------------------------------
 
-hs.hotkey.bind(hyper, 'k', function()
+bindUp = hs.hotkey.bind(hyper, 'k', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()
@@ -113,7 +130,7 @@ end)
 -- hyper j for original size
 -----------------------------------------------
 
-hs.hotkey.bind(hyper, 'j', function()
+bindDown = hs.hotkey.bind(hyper, 'j', function()
     if hs.window.focusedWindow() then
         local win = hs.window.focusedWindow()
         local f = win:frame()
@@ -264,10 +281,10 @@ hs.alert.show("Config loaded")
 -- Hyper i to show window hints
 -----------------------------------------------
 
-hs.hotkey.bind(hyper, 'i', function()
-    hs.hints.style = 'vimperator'
-    hs.hints.windowHints()
-end)
+-- hs.hotkey.bind(hyper, 'i', function()
+--     hs.hints.style = 'vimperator'
+--     hs.hints.windowHints()
+-- end)
 
 hs.hotkey.bind(hyper, '`', function()
     local screen = hs.mouse.getCurrentScreen()
@@ -302,7 +319,7 @@ end)
 
 hs.hotkey.bind(hyper, '\'',function()
 	for index,win in pairs(hs.screen.allScreens()) do 
-		if win == hs.screen'Dell' then
+		if win ~= hs.screen'Color LCD' then
 			if win:rotate() == 90 then
 				win:rotate(0)
 			else
@@ -313,14 +330,37 @@ hs.hotkey.bind(hyper, '\'',function()
 end)
 
 -----------------------------------------------
--- Exit wechat when sleep
+-- Disable HS when Screenshare
 -----------------------------------------------
-killWechat = hs.caffeinate.watcher.new(function (state)
-    if state ==  hs.caffeinate.watcher.screensDidSleep then
-        hs.application.find('wechat'):kill()
+disableKeyBind = hs.application.watcher.new(function (name, event, app)
+    if name == 'Screen Sharing' then
+        if event == hs.application.watcher.activated then
+        -- hs.hotkey.disableAll
+            bindRight:disable()
+            bindLeft:disable()
+            bindUp:disable()
+            bindDown:disable()
+        end
+        if event == hs.application.watcher.deactivated then
+            bindRight:enable()
+            bindLeft:enable()
+            bindUp:enable()
+            bindDown:enable()
+        end
     end
 end)
-killWechat:start()
+disableKeyBind:start()
+
+-----------------------------------------------
+-- Exit wechat when sleep
+-----------------------------------------------
+-- killWechat = hs.caffeinate.watcher.new(function (state)
+--     if state ==  hs.caffeinate.watcher.screensDidSleep then
+--         local wechat =  hs.application.find('wechat')
+--         wechat:kill()
+--     end
+-- end)
+-- killWechat:start()
 
 -----------------------------------------------
 -- Input method change
@@ -339,21 +379,44 @@ hs.hotkey.bind({"cmd","alt"}, 'j', function()
 		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "U.S.")} \n end tell ')
 	end
 end)
+hs.hotkey.bind({"cmd","alt"}, 'k', function()
+	if hs.keycodes.currentSourceID() ~= "com.apple.inputmethod.Korean.2SetKorean" then
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "2-set Korean")} \n end tell ')
+	else
+		hs.applescript.applescript('tell application "System Events" to tell process "SystemUIServer" \n tell (1st menu bar item of menu bar 1 whose description is "text input") to {click, click (menu 1\'s menu item "U.S.")} \n end tell ')
+	end
+end)
+
+-----------------------------------------------
+-- set caffinate for 8 hours from 9am everyday
+-----------------------------------------------
+hs.timer.doAt("9:00", "1d", function()
+    -- hs.alert.show("No active window")
+    hs.osascript.applescript('do shell script "caffeinate -dit 28800 &"')
+end)
 
 -----------------------------------------------
 -- mute when connect to select WIFI
 -----------------------------------------------
-wifiMute = hs.wifi.watcher.new(function()
-    local workWifi = 'CUPD_WIFI'
-    local outputDeviceName = 'Built-in Output'
+local workWifi = 'CUPD_Staff'
+local homeWifi = 'ukeyim_tp'
+local outputDeviceName = 'Built-in Output'
+getMute = hs.wifi.watcher.new(function()
     local currentWifi = hs.wifi.currentNetwork()
     local currentOutput = hs.audiodevice.current(false)
     if not currentWifi then return end
     if (currentWifi == workWifi and currentOutput.name == outputDeviceName) then
         hs.audiodevice.findDeviceByName(outputDeviceName):setOutputMuted(true)
+        -- hs.caffeinate.set('system', true, false)
+    elseif (currentWifi == homeWifi) then
+        -- hs.osascript._osascript("mount volume \"smb://192.168.0.106/ukeyim\"",'AppleScript' )
+        -- hs.caffeinate.set('displayIdle', false, false)
+        hs.audiodevice.findDeviceByName(outputDeviceName):setOutputMuted(false)
+    -- else
+    --     hs.caffeinate.set('displayIdle', false, false)
     end
 end)
-wifiMute:start()
+getMute:start()
 
 -----------------------------------------------
 --Simple Vi mode with Hammerspoon (fn+hjkl) 
